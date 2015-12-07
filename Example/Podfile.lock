@@ -1,0 +1,14 @@
+PODS:
+  - CoachKit (0.1.0)
+
+DEPENDENCIES:
+  - CoachKit (from `../`)
+
+EXTERNAL SOURCES:
+  CoachKit:
+    :path: ../
+
+SPEC CHECKSUMS:
+  CoachKit: f2c52f9454a14f5d42586a2da8dba96ab9f6b0ae
+
+COCOAPODS: 0.39.0

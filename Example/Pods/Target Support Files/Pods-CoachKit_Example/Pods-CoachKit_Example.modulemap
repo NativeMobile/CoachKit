@@ -1,0 +1,6 @@
+framework module Pods_CoachKit_Example {
+  umbrella header "Pods-CoachKit_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}

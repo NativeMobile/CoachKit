@@ -1,0 +1,6 @@
+framework module CoachKit {
+  umbrella header "CoachKit-umbrella.h"
+
+  export *
+  module * { export * }
+}

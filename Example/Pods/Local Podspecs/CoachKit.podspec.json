@@ -1,0 +1,25 @@
+{
+  "name": "CoachKit",
+  "version": "0.1.0",
+  "summary": "A short description of CoachKit.",
+  "description": "",
+  "homepage": "https://github.com/<GITHUB_USERNAME>/CoachKit",
+  "license": "MIT",
+  "authors": {
+    "Keith Coughtrey": "keith.coughtrey@anz.com"
+  },
+  "source": {
+    "git": "https://github.com/<GITHUB_USERNAME>/CoachKit.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "requires_arc": true,
+  "source_files": "Pod/Classes/**/*",
+  "resource_bundles": {
+    "CoachKit": [
+      "Pod/Assets/*.png"
+    ]
+  }
+}
