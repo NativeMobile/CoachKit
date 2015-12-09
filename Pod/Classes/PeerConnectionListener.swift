@@ -65,7 +65,7 @@ class PeerConnectionListener: SessionDelegateDefault, MCNearbyServiceAdvertiserD
     override func disconnect() {
         stopAdvertisingForPeers()
         callDelegate { () -> Void in
-            self.delegate?.didDisconnectFromSession()
+            self.delegate?.didDisconnectFromClass()
         }
         super.disconnect()
     }
@@ -140,7 +140,7 @@ class PeerConnectionListener: SessionDelegateDefault, MCNearbyServiceAdvertiserD
         let dictionary = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! Dictionary<String, AnyObject>
         NSLog("Peer %@ has sent message %@", peerID, dictionary)
         callDelegate({ () -> Void in
-            self.delegate?.didReceiveDictionary(dictionary)
+            self.delegate?.didReceiveDictionaryFromPeerWithName(peerID.displayName, dictionary: dictionary)
         })
         
     }

@@ -17,8 +17,8 @@ public extension PeerConnectionListenerDelegate where Self : ActivityLogger {
         addLogItem("Stopped advertising willingness to join class")
     }
     
-    func didDisconnectFromSession() {
-        addLogItem("This device disconnected")
+    func didDisconnectFromClass() {
+        addLogItem("This device disconnected from the class")
     }
     
     func didAcceptInvitationToJoinClass() {
@@ -37,8 +37,8 @@ public extension PeerConnectionListenerDelegate where Self : ActivityLogger {
         addLogItem("The coach disconnected")
     }
     
-    func didReceiveDictionary(dictionary: Dictionary<String, AnyObject>) {
-        addLogItem("Received data from coach: \(dictionary) ")
+    func didReceiveDictionaryFromPeerWithName(name: String, dictionary: Dictionary<String, AnyObject>) {
+        addLogItem("Received  from class member \(name) data: \(dictionary) ")
     }
 
 }

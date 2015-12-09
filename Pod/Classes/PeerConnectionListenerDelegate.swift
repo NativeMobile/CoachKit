@@ -12,11 +12,11 @@ public protocol PeerConnectionListenerDelegate : class {
 
     func didStartAdvertisingForPeers()
     func didStopAdvertisingForPeers()
-    func didDisconnectFromSession()
+    func didDisconnectFromClass()
     func didAcceptInvitationToJoinClass()
     func didStartConnectingToCoachingSession()
     func didConnectToCoachingSession()
     func didDisconnectFromCoachingSession()
-    func didReceiveDictionary(dictionary: Dictionary<String, AnyObject>)
+    func didReceiveDictionaryFromPeerWithName(name: String, dictionary: Dictionary<String, AnyObject>)
 
 }
