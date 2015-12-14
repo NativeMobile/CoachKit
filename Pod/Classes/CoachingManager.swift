@@ -29,5 +29,9 @@ public class CoachingManager {
         manager.sendMessageToPeers(dictionary, success: success, failure: failure)
     }
 
+    public func sendMessageToPeerWithName(name: String, dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (error: String)-> ()) {
+        manager.sendMessageToPeerWithName(name, dictionary: dictionary, success: success, failure: failure)
+    }
+    
 
 }

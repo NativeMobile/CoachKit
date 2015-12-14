@@ -78,11 +78,18 @@ class PeerConnectionManager : SessionDelegateDefault, MCNearbyServiceBrowserDele
     
     func sendMessageToPeers(dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (error: String)-> ()) {
         NSLog("Sending data %@ to %@", dictionary, session!.connectedPeers);
-        let data = NSKeyedArchiver.archivedDataWithRootObject(dictionary)
         let peers = session!.connectedPeers as [MCPeerID]
-        sendMessageToPeersWithData(data, peers: peers, success: success, failure: failure)
+        sendMessageToPeersWithDictionary(dictionary, peers: peers, success: success, failure: failure)
     }
-    
+
+    func sendMessageToPeerWithName(name: String, dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (error: String)-> ()) {
+        let peers = session!.connectedPeers.filter { (peerID) -> Bool in
+            return peerID.displayName == name
+        }
+        NSLog("Sending data %@ to %@", dictionary, peers);
+        sendMessageToPeersWithDictionary(dictionary, peers: peers, success: success, failure: failure)
+    }
+
     override func didBecomeActive(notification: NSNotification) {
         super.didBecomeActive(notification)
         if session != nil {

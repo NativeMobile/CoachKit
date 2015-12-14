@@ -20,7 +20,7 @@ public class CoachConnectionManager {
         listener.startAdvertisingWillingnessToJoinTeachingSession()
     }
     
-    func sendMessageToCoach(dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (error: String)-> ()) {
+    public func sendMessageToCoach(dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (error: String)-> ()) {
         listener.sendMessageToCoach(dictionary, success: success, failure: failure)
     }
 }

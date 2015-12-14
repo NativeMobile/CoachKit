@@ -71,9 +71,8 @@ class PeerConnectionListener: SessionDelegateDefault, MCNearbyServiceAdvertiserD
     }
     
     func sendMessageToCoach(dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (error: String)-> ()) {
-        let data = NSKeyedArchiver.archivedDataWithRootObject(dictionary)
         let peers = [coachPeer!]
-        sendMessageToPeersWithData(data, peers: peers, success: success, failure: failure)
+        sendMessageToPeersWithDictionary(dictionary, peers: peers, success: success, failure: failure)
     }
     
     override func didBecomeActive(notification: NSNotification) {

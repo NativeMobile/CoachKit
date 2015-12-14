@@ -82,9 +82,10 @@ class SessionDelegateDefault : NSObject, MCSessionDelegate {
 
     // MARK: Data exchange
     
-    func sendMessageToPeersWithData(data: NSData, peers: [MCPeerID], success: ()->(), failure: (error: String)-> ()) {
+    func sendMessageToPeersWithDictionary(dictionary: Dictionary<String, AnyObject>, peers: [MCPeerID], success: ()->(), failure: (error: String)-> ()) {
         // Note any peers in the 'toPeers' array argument are not connected this will fail.
         if session!.connectedPeers.count > 0 {
+            let data = NSKeyedArchiver.archivedDataWithRootObject(dictionary)
             var error: NSError?
             let sendSuccess: Bool
             do {
