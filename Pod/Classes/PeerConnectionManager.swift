@@ -185,7 +185,7 @@ class PeerConnectionManager : SessionDelegateDefault, MCNearbyServiceBrowserDele
         let dictionary = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! Dictionary<String, AnyObject>
         NSLog("Peer %@ has sent message %@", peerID, dictionary)
         callDelegate({ () -> Void in
-            self.delegate?.didReceiveDictionary(dictionary)
+            self.delegate?.didReceiveDictionaryFromPeerWithName(peerID.displayName, dictionary: dictionary)
         })
         
     }

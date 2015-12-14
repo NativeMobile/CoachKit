@@ -39,9 +39,8 @@ public extension PeerConnectionManagerDelegate where Self : ActivityLogger {
         addLogItem("Class member \(name) disconnected from the class")
     }
     
-    func didReceiveDictionary(dictionary: Dictionary<String, AnyObject>) {
-        addLogItem("Received data from class member: \(dictionary) ")
+    func didReceiveDictionaryFromPeerWithName(name: String, dictionary: Dictionary<String, AnyObject>) {
+        addLogItem("Received  from class member \(name) data: \(dictionary) ")
     }
-    
 
 }

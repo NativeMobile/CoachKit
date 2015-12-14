@@ -140,7 +140,7 @@ class PeerConnectionListener: SessionDelegateDefault, MCNearbyServiceAdvertiserD
         let dictionary = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! Dictionary<String, AnyObject>
         NSLog("Peer %@ has sent message %@", peerID, dictionary)
         callDelegate({ () -> Void in
-            self.delegate?.didReceiveDictionaryFromPeerWithName(peerID.displayName, dictionary: dictionary)
+            self.delegate?.didReceiveDictionary(dictionary)
         })
         
     }

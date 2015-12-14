@@ -16,5 +16,5 @@ public protocol PeerConnectionManagerDelegate : class {
     func studentDidStartConnecting(name: String)
     func studentDidConnect(name: String)
     func studentDidDisconnect(name: String)
-    func didReceiveDictionary(dictionary: Dictionary<String, AnyObject>)
+    func didReceiveDictionaryFromPeerWithName(name: String, dictionary: Dictionary<String, AnyObject>)
 }

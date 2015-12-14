@@ -17,6 +17,6 @@ public protocol PeerConnectionListenerDelegate : class {
     func didStartConnectingToCoachingSession()
     func didConnectToCoachingSession()
     func didDisconnectFromCoachingSession()
-    func didReceiveDictionaryFromPeerWithName(name: String, dictionary: Dictionary<String, AnyObject>)
+    func didReceiveDictionary(dictionary: Dictionary<String, AnyObject>)
 
 }
