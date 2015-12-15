@@ -39,7 +39,7 @@ class SessionDelegateDefault : NSObject, MCSessionDelegate {
     }
     
     func willResignActive(notification: NSNotification) {
-        NSLog("WillResignActive, disconnecting from peers %@", session!.connectedPeers)
+        NSLog("WillResignActive, disconnecting from peers %@", session?.connectedPeers ?? "[]")
         disconnect()
     }
     
