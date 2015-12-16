@@ -1,6 +1,6 @@
 # CoachKit
 
-[![CI Status](http://img.shields.io/travis/Keith Coughtrey/CoachKit.svg?style=flat)](https://travis-ci.org/Keith Coughtrey/CoachKit)
+[![CI Status](http://img.shields.io/travis/NativeMobile/CoachKit.svg?style=flat)](https://travis-ci.org/NativeMobile/CoachKit)
 [![Version](https://img.shields.io/cocoapods/v/CoachKit.svg?style=flat)](http://cocoapods.org/pods/CoachKit)
 [![License](https://img.shields.io/cocoapods/l/CoachKit.svg?style=flat)](http://cocoapods.org/pods/CoachKit)
 [![Platform](https://img.shields.io/cocoapods/p/CoachKit.svg?style=flat)](http://cocoapods.org/pods/CoachKit)
