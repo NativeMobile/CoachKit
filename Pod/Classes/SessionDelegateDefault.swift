@@ -29,8 +29,8 @@ class SessionDelegateDefault : NSObject, MCSessionDelegate {
         thisPeer = SessionDelegateDefault.getPeerId()
         super.init()
 #if os(iOS)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "willResignActive:", name: UIApplicationWillResignActiveNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "didBecomeActive:", name: UIApplicationDidBecomeActiveNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(SessionDelegateDefault.willResignActive(_:)), name: UIApplicationWillResignActiveNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(SessionDelegateDefault.didBecomeActive(_:)), name: UIApplicationDidBecomeActiveNotification, object: nil)
 #endif
     }
     

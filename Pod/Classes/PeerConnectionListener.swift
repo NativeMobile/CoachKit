@@ -87,7 +87,7 @@ class PeerConnectionListener: SessionDelegateDefault, MCNearbyServiceAdvertiserD
     // MARK: MCNearbyServiceAdvertiserDelegate
     
     // Incoming invitation request.  Call the invitationHandler block with YES and a valid session to connect the inviting peer to the session.
-    func advertiser(advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: NSData?, invitationHandler: ((Bool, MCSession) -> Void)) {
+    func advertiser(advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: NSData?, invitationHandler: (Bool, MCSession?) -> Void) {
         NSLog("Incoming invitation from peer %@", peerID.displayName);
         // Accept the invitation
         coachPeer = peerID;
