@@ -13,7 +13,7 @@ class SessionDelegateDefault : NSObject, MCSessionDelegate {
     
     static let PEER_STORAGE_KEY = "peer_id_key"
 #if os(iOS)
-    static let deviceName = UIDevice.currentDevice().name
+    static let deviceName = UIDevice.current.name
 #else
     static let deviceName = NSHost.currentHost().localizedName!
 #endif
@@ -29,21 +29,21 @@ class SessionDelegateDefault : NSObject, MCSessionDelegate {
         thisPeer = SessionDelegateDefault.getPeerId()
         super.init()
 #if os(iOS)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(SessionDelegateDefault.willResignActive(_:)), name: UIApplicationWillResignActiveNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(SessionDelegateDefault.didBecomeActive(_:)), name: UIApplicationDidBecomeActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(SessionDelegateDefault.willResignActive(_:)), name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(SessionDelegateDefault.didBecomeActive(_:)), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
 #endif
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
-    func willResignActive(notification: NSNotification) {
+    func willResignActive(_ notification: Notification) {
         NSLog("WillResignActive, disconnecting from peers %@", session?.connectedPeers ?? "[]")
         disconnect()
     }
     
-    func didBecomeActive(notification: NSNotification) {
+    func didBecomeActive(_ notification: Notification) {
         NSLog("didBecomeActive")
     }
     
@@ -54,26 +54,26 @@ class SessionDelegateDefault : NSObject, MCSessionDelegate {
     }
 
     // All calls back to the delegate should go through this function to ensure consistent thread handling
-    func callDelegate(call: () -> Void) {
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+    func callDelegate(_ call: @escaping () -> Void) {
+        DispatchQueue.main.async(execute: { () -> Void in
             call()
         })
     }
     
     // MARK: PeerID storage
     class func getPeerId()-> MCPeerID {
-        let defaults = NSUserDefaults.standardUserDefaults()
-        let peerIdData = defaults.dataForKey(PEER_STORAGE_KEY)
+        let defaults = UserDefaults.standard
+        let peerIdData = defaults.data(forKey: PEER_STORAGE_KEY)
         if (peerIdData != nil) {
             // Was found in user defaults so deserialize
-            let archivedPeer = NSKeyedUnarchiver.unarchiveObjectWithData(peerIdData!) as! MCPeerID
+            let archivedPeer = NSKeyedUnarchiver.unarchiveObject(with: peerIdData!) as! MCPeerID
             NSLog("Found existing peerId %@", archivedPeer)
             return archivedPeer;
         } else {
             // Not found so create one and store in user defaults before returning
             let thisPeer = MCPeerID(displayName: deviceName)
-            let peerData = NSKeyedArchiver.archivedDataWithRootObject(thisPeer)
-            defaults.setObject(peerData, forKey: PEER_STORAGE_KEY)
+            let peerData = NSKeyedArchiver.archivedData(withRootObject: thisPeer)
+            defaults.set(peerData, forKey: PEER_STORAGE_KEY)
             defaults.synchronize()
             NSLog("Created new peerId %@", thisPeer)
             return thisPeer
@@ -82,14 +82,14 @@ class SessionDelegateDefault : NSObject, MCSessionDelegate {
 
     // MARK: Data exchange
     
-    func sendMessageToPeersWithDictionary(dictionary: Dictionary<String, AnyObject>, peers: [MCPeerID], success: ()->(), failure: (error: String)-> ()) {
+    func sendMessageToPeersWithDictionary(_ dictionary: Dictionary<String, AnyObject>, peers: [MCPeerID], success: ()->(), failure: (_ error: String)-> ()) {
         // Note any peers in the 'toPeers' array argument are not connected this will fail.
         if session!.connectedPeers.count > 0 {
-            let data = NSKeyedArchiver.archivedDataWithRootObject(dictionary)
+            let data = NSKeyedArchiver.archivedData(withRootObject: dictionary)
             var error: NSError?
             let sendSuccess: Bool
             do {
-                try session!.sendData(data, toPeers: session!.connectedPeers, withMode: MCSessionSendDataMode.Reliable)
+                try session!.send(data, toPeers: session!.connectedPeers, with: MCSessionSendDataMode.reliable)
                 sendSuccess = true
             } catch let error1 as NSError {
                 error = error1
@@ -99,7 +99,7 @@ class SessionDelegateDefault : NSObject, MCSessionDelegate {
             if (sendSuccess) {
                 success()
             } else {
-                failure(error: "Message could not be sent to all connected peers: \(error)")
+                failure("Message could not be sent to all connected peers: \(error)")
             }
         } else {
             success()
@@ -110,44 +110,44 @@ class SessionDelegateDefault : NSObject, MCSessionDelegate {
     // MARK: MCSessionDelegate default implementation
     
     // Remote peer changed state
-    func session(session: MCSession, peer peerID: MCPeerID, didChangeState state: MCSessionState) {
+    func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
         NSLog("Peer %@ changed state to %@", peerID.displayName, stateDescription(state))
     }
     
     // Received data from remote peer
-    func session(session: MCSession, didReceiveData data: NSData, fromPeer peerID: MCPeerID) {
-        let dictionary = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! Dictionary<String, AnyObject>
+    func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
+        let dictionary = NSKeyedUnarchiver.unarchiveObject(with: data) as! Dictionary<String, AnyObject>
         NSLog("Peer %@ has sent message %@", peerID, dictionary)
         
     }
     
     // Received a byte stream from remote peer
-    func session(session: MCSession, didReceiveStream stream: NSInputStream, withName streamName: String, fromPeer peerID: MCPeerID) {
+    func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID) {
         NSLog("Received a byte stream from remote peer %@", peerID)
     }
     
     // Start receiving a resource from remote peer
-    func session(session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, withProgress progress: NSProgress) {
+    func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress) {
         NSLog("didStartReceivingResourceWithName %@", resourceName)
     }
     
     // Finished receiving a resource from remote peer and saved the content in a temporary location - the app is responsible for moving the file to a permanent location within its sandbox
-    func session(session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, atURL localURL: NSURL, withError error: NSError?) {
+    func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL, withError error: Error?) {
         NSLog("didFinishReceivingResourceWithName %@", resourceName)
     }
     
     // Made first contact with peer and have identity information about the remote peer (certificate may be nil)
-    func session(session: MCSession, didReceiveCertificate certificate: [AnyObject]?, fromPeer peerID: MCPeerID, certificateHandler: ((Bool) -> Void)) {
+    func session(_ session: MCSession, didReceiveCertificate certificate: [Any]?, fromPeer peerID: MCPeerID, certificateHandler: (@escaping (Bool) -> Void)) {
         certificateHandler(true);
     }
     
-    func stateDescription(state: MCSessionState) -> String {
+    func stateDescription(_ state: MCSessionState) -> String {
         switch state {
-        case .Connected:
+        case .connected:
             return "Connected"
-        case .Connecting:
+        case .connecting:
             return "Connecting"
-        case .NotConnected:
+        case .notConnected:
             return "NotConnected"
         }
     }

@@ -24,22 +24,22 @@ class StudentActivityLogViewController :  ActivityLogViewController, PeerConnect
     
     func didDisconnectFromSession() {
         addLogItem("This device disconnected")        
-        classButton!.tintColor = UIColor.redColor()
+        classButton!.tintColor = UIColor.red
     }
     
     func didStartConnectingToCoachingSession() {
         addLogItem("Started connecting to a class")
-        classButton!.tintColor = UIColor.orangeColor()
+        classButton!.tintColor = UIColor.orange
     }
 
     func didConnectToCoachingSession() {
         addLogItem("Did connect to a class")
-        classButton!.tintColor = UIColor.greenColor()
+        classButton!.tintColor = UIColor.green
     }
 
     func didDisconnectFromCoachingSession() {
         addLogItem("The coach disconnected")        
-        classButton!.tintColor = UIColor.redColor()
+        classButton!.tintColor = UIColor.red
     }
 
 }

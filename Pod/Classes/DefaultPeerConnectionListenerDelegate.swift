@@ -37,7 +37,7 @@ public extension PeerConnectionListenerDelegate where Self : ActivityLogger {
         addLogItem("The coach disconnected")
     }
     
-    func didReceiveDictionary(dictionary: Dictionary<String, AnyObject>) {
+    func didReceiveDictionary(_ dictionary: Dictionary<String, AnyObject>) {
         addLogItem("Received data from class member: \(dictionary) ")
     }
 }

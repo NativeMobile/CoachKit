@@ -16,22 +16,22 @@ public class PeerConnectionViewController : UIViewController, UICollectionViewDa
     
     @IBOutlet weak var peerCollectionView: UICollectionView!
 
-    override public func viewDidAppear(animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "classChanged:", name: CoachKitConstants.classChangeNotificationName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(classChanged), name: NSNotification.Name(CoachKitConstants.classChangeNotificationName), object: nil)
 
     }
     
-    override public func viewDidDisappear(animated: Bool) {
+    override public func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
-    func classChanged(notification: NSNotification) {
+    func classChanged(notification: Notification) {
         peerCollectionView.reloadData()
     }
 
-    public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if let manager = manager {
             return manager.classPeers.count
         } else {
@@ -40,8 +40,8 @@ public class PeerConnectionViewController : UIViewController, UICollectionViewDa
     }
     
     // The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
-    public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PeerCell", forIndexPath: indexPath) as! PeerCell
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PeerCell", for: indexPath) as! PeerCell
         let peerWithStatus = manager!.classPeers[indexPath.row]
         cell.peerName.text = peerWithStatus.peer.displayName;
         cell.peerStatus.text = peerWithStatus.state;

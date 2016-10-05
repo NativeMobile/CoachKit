@@ -13,7 +13,8 @@ class SendToClassViewController : UIViewController {
     
     @IBOutlet weak var messageTextField: UITextField!
     
-    override func viewDidAppear(animated: Bool) {
+    
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         messageTextField!.becomeFirstResponder()
     }

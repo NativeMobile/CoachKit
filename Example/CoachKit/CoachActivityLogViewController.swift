@@ -22,10 +22,10 @@ class CoachActivityLogViewController :  ActivityLogViewController, PeerConnectio
     // MARK: Unwind segues
     
     @IBAction func sendMessage(segue:UIStoryboardSegue) {
-        let vc = segue.sourceViewController as! SendToClassViewController
+        let vc = segue.source as! SendToClassViewController
         let message = ["text":vc.messageTextField.text!];
         
-        manager?.sendMessageToPeers(message, success: { () -> () in
+        manager?.sendMessageToPeers(message as Dictionary<String, AnyObject>, success: { () -> () in
             self.addLogItem("Message was sent to class")
             }, failure: { (error: String) -> () in
             self.addLogItem(error)
@@ -36,9 +36,9 @@ class CoachActivityLogViewController :  ActivityLogViewController, PeerConnectio
     }
     // MARK: Segue handling
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ShowClass" {
-            let nc = segue.destinationViewController as! UINavigationController
+            let nc = segue.destination as! UINavigationController
             let vc = nc.topViewController as! PeerConnectionViewController
             vc.manager = manager
             

@@ -12,7 +12,7 @@ import MultipeerConnectivity;
 
 class PeerConnectionManager : SessionDelegateDefault, MCNearbyServiceBrowserDelegate {
 
-    let queue = dispatch_queue_create("nz.co.nativemobile.coachkit.queue", DISPATCH_QUEUE_SERIAL) //Blocks submitted to a serial queue are executed one at a time in FIFO order
+    let queue = DispatchQueue(label: "nz.co.nativemobile.coachkit.queue", attributes: []) //Blocks submitted to a serial queue are executed one at a time in FIFO order
     var classPeers = [PeerWithStatus]()
     internal var serviceBrowser: MCNearbyServiceBrowser?
     internal weak var delegate: PeerConnectionManagerDelegate?
@@ -38,9 +38,9 @@ class PeerConnectionManager : SessionDelegateDefault, MCNearbyServiceBrowserDele
         
     }
 
-    private func startLookingForPeers() {
+    fileprivate func startLookingForPeers() {
         if !isBrowsing {
-            if UIApplication.sharedApplication().applicationState == .Active {
+            if UIApplication.shared.applicationState == .active {
                 serviceBrowser!.startBrowsingForPeers()
                 isBrowsing = true
                 NSLog("startBrowsingForPeers")
@@ -53,7 +53,7 @@ class PeerConnectionManager : SessionDelegateDefault, MCNearbyServiceBrowserDele
         }
     }
 
-    private func stopLookingForPeers() {
+    fileprivate func stopLookingForPeers() {
         if isBrowsing {
             serviceBrowser!.stopBrowsingForPeers()
             isBrowsing = false
@@ -76,13 +76,13 @@ class PeerConnectionManager : SessionDelegateDefault, MCNearbyServiceBrowserDele
         super.disconnect()
     }
     
-    func sendMessageToPeers(dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (error: String)-> ()) {
+    func sendMessageToPeers(_ dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (_ error: String)-> ()) {
         NSLog("Sending data %@ to %@", dictionary, session!.connectedPeers);
         let peers = session!.connectedPeers as [MCPeerID]
         sendMessageToPeersWithDictionary(dictionary, peers: peers, success: success, failure: failure)
     }
 
-    func sendMessageToPeerWithName(name: String, dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (error: String)-> ()) {
+    func sendMessageToPeerWithName(_ name: String, dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (_ error: String)-> ()) {
         let peers = session!.connectedPeers.filter { (peerID) -> Bool in
             return peerID.displayName == name
         }
@@ -90,7 +90,7 @@ class PeerConnectionManager : SessionDelegateDefault, MCNearbyServiceBrowserDele
         sendMessageToPeersWithDictionary(dictionary, peers: peers, success: success, failure: failure)
     }
 
-    override func didBecomeActive(notification: NSNotification) {
+    override func didBecomeActive(_ notification: Notification) {
         super.didBecomeActive(notification)
         if session != nil {
             NSLog("setting session delegate")
@@ -101,11 +101,11 @@ class PeerConnectionManager : SessionDelegateDefault, MCNearbyServiceBrowserDele
     
     // MARK: functions that should be queued to avoid concurrent access to classPeers
     
-    private func foundNearbyPeer(peerID: MCPeerID) {
+    fileprivate func foundNearbyPeer(_ peerID: MCPeerID) {
         NSLog("Processing found peer \(peerID)");
         if classPeers.count < maxPeers {
             // First see if the peer is already in the class
-            let indexOfPeer = classPeers.indexOf({ (peer) -> Bool in
+            let indexOfPeer = classPeers.index(where: { (peer) -> Bool in
                 peer.peer.isEqual(peerID)
             })
             if let index = indexOfPeer {
@@ -116,7 +116,7 @@ class PeerConnectionManager : SessionDelegateDefault, MCNearbyServiceBrowserDele
             let peerWithStatus = PeerWithStatus(peerId: peerID, sessionState: "Invited")
             classPeers.append(peerWithStatus) //TODO: Remove peer if it doesn't progress to connecting within the timeout period below
             // Join them in to the session
-            serviceBrowser!.invitePeer(peerID, toSession: session!, withContext: nil, timeout: 30)
+            serviceBrowser!.invitePeer(peerID, to: session!, withContext: nil, timeout: 30)
             callDelegate({ () -> Void in
                 self.delegate?.didIssueInvitationToJoinClass(peerID.displayName)
             })
@@ -129,8 +129,8 @@ class PeerConnectionManager : SessionDelegateDefault, MCNearbyServiceBrowserDele
         }
     }
     
-    private func peerChangedState(peerID: MCPeerID, state: MCSessionState) {
-        let indexOfPeerThatChanged = classPeers.indexOf({ (peer) -> Bool in
+    fileprivate func peerChangedState(_ peerID: MCPeerID, state: MCSessionState) {
+        let indexOfPeerThatChanged = classPeers.index(where: { (peer) -> Bool in
             peer.peer.isEqual(peerID)
         })
         guard let index = indexOfPeerThatChanged else {
@@ -141,16 +141,16 @@ class PeerConnectionManager : SessionDelegateDefault, MCNearbyServiceBrowserDele
         let name = classPeers[index].peer.displayName
         callDelegate({ () -> Void in
             switch state {
-            case .Connected:
+            case .connected:
                 self.delegate?.studentDidConnect(name)
-            case .Connecting:
+            case .connecting:
                 self.delegate?.studentDidStartConnecting(name)
-            case .NotConnected:
+            case .notConnected:
                 self.delegate?.studentDidDisconnect(name)
             }
         })
-        if state == MCSessionState.NotConnected {
-            classPeers.removeAtIndex(index)
+        if state == MCSessionState.notConnected {
+            classPeers.remove(at: index)
             // We lost a student so ensure we are browsing for a replacement
             startLookingForPeers()
         }
@@ -160,36 +160,36 @@ class PeerConnectionManager : SessionDelegateDefault, MCNearbyServiceBrowserDele
     // MARK: - MCNearbyServiceBrowserDelegate
     
     // Found a nearby advertising peer
-    func browser(browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
-        NSLog("Found a nearby advertising peer %@", peerID);
-        dispatch_sync(queue, {[weak self] () -> Void in
+    func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
+        NSLog("Found a nearby advertising peer \(peerID)")
+        queue.sync(execute: {[weak self] () -> Void in
             self?.foundNearbyPeer(peerID)
         })
     }
     
     // A nearby peer has stopped advertising
-    func browser(browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
-        NSLog("A nearby peer %@ has stopped advertising", peerID);
+    func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
+        NSLog("A nearby peer %@ has stopped advertising", peerID)
     }
     
     // Browsing did not start due to an error
-    func browser(browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: NSError) {
-        NSLog("Browsing did not start due to an error %@", error);
+    func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Error) {
+        NSLog("Browsing did not start due to an error \(error)")
     }
     
     // MARK: - MCSessionDelegate
     
     // Remote peer changed state
-    override func session(session: MCSession, peer peerID: MCPeerID, didChangeState state: MCSessionState) {
+    override func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
         NSLog("Remote peer %@ changed state to %@", peerID, stateDescription(state))
-        dispatch_sync(queue, {[weak self] () -> Void in
+        queue.sync(execute: {[weak self] () -> Void in
             self?.peerChangedState(peerID, state: state)
         })
     }
     
     // Received data from remote peer
-    override func session(session: MCSession, didReceiveData data: NSData, fromPeer peerID: MCPeerID) {
-        let dictionary = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! Dictionary<String, AnyObject>
+    override func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
+        let dictionary = NSKeyedUnarchiver.unarchiveObject(with: data) as! Dictionary<String, AnyObject>
         NSLog("Peer %@ has sent message %@", peerID, dictionary)
         callDelegate({ () -> Void in
             self.delegate?.didReceiveDictionaryFromPeerWithName(peerID.displayName, dictionary: dictionary)
@@ -200,10 +200,10 @@ class PeerConnectionManager : SessionDelegateDefault, MCNearbyServiceBrowserDele
     // MARK: Notifications
     
     func postClassChangedNotification() {
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+        DispatchQueue.main.async(execute: { () -> Void in
 //            NSNotificationCenter.defaultCenter().postNotificationName(CoachKitConstants.classChangeNotificationName, object: self)
             //TODO: Update once I move to a framework
-            NSNotificationCenter.defaultCenter().postNotificationName("classMembersChanged", object: self)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "classMembersChanged"), object: self)
         })
     }
 }

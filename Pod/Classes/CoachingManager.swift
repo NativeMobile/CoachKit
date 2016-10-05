@@ -8,9 +8,9 @@
 
 import Foundation
 
-public class CoachingManager {
-    private let manager: PeerConnectionManager
-    public var classPeers: [PeerWithStatus] {
+open class CoachingManager {
+    fileprivate let manager: PeerConnectionManager
+    open var classPeers: [PeerWithStatus] {
         get {
             let peers = manager.classPeers
             return peers
@@ -21,15 +21,15 @@ public class CoachingManager {
         manager = PeerConnectionManager(serviceName: serviceName, peerConnectionManagerDelegate: peerConnectionManagerDelegate)
     }
     
-    public func startCoachingSession() {
+    open func startCoachingSession() {
         manager.findPeersToJoinClass()
     }
     
-    public func sendMessageToPeers(dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (error: String)-> ()) {
+    open func sendMessageToPeers(_ dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (_ error: String)-> ()) {
         manager.sendMessageToPeers(dictionary, success: success, failure: failure)
     }
 
-    public func sendMessageToPeerWithName(name: String, dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (error: String)-> ()) {
+    open func sendMessageToPeerWithName(_ name: String, dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (_ error: String)-> ()) {
         manager.sendMessageToPeerWithName(name, dictionary: dictionary, success: success, failure: failure)
     }
     

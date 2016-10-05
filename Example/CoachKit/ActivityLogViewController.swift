@@ -11,7 +11,7 @@ import CoachKit
 
 class ActivityLogViewController: UITableViewController, ActivityLogger {
 
-    let formatter = NSDateFormatter()
+    let formatter = DateFormatter()
     var activityItems = [ActivityLogItem]()
     
     override func viewDidLoad() {
@@ -21,22 +21,23 @@ class ActivityLogViewController: UITableViewController, ActivityLogger {
         formatter.dateFormat = "HH':'mm':'ss'.'SSS"
     }
     
+    
     // MARK: UITableViewDataSource
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return activityItems.count
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("activityLogItem") as! ActivityLogTableViewCell
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "activityLogItem") as! ActivityLogTableViewCell
         let item = activityItems[indexPath.row]
         cell.message.text = "\(item.time)- \(item.message)"
         return cell
     }
 
     // MARK: Helpers
-    func addLogItem(message: String) {
+    func addLogItem(_ message: String) {
         NSLog("Adding log message: \(message)")
-        let time = formatter.stringFromDate(NSDate())
+        let time = formatter.string(from: Date())
         let item = ActivityLogItem(time: time, message: message)
         activityItems.append(item)
         tableView.reloadData()

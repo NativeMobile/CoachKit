@@ -9,19 +9,19 @@
 import Foundation
 import MultipeerConnectivity;
 
-public class PeerWithStatus {
-    public let peer: MCPeerID
-    public var state: String {
+open class PeerWithStatus {
+    open let peer: MCPeerID
+    open var state: String {
         didSet {
-            lastStateChange = NSDate()
+            lastStateChange = Date()
         }
     }
-    public var lastStateChange: NSDate
+    open var lastStateChange: Date
     
     init (peerId: MCPeerID, sessionState: String) {
         peer = peerId
         state = sessionState
-        lastStateChange = NSDate()
+        lastStateChange = Date()
     }
     
 }

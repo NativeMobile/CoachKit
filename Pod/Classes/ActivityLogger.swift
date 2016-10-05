@@ -9,5 +9,5 @@
 import Foundation
 
 public protocol ActivityLogger {
-    func addLogItem(message: String)
+    func addLogItem(_ message: String)
 }

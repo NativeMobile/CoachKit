@@ -23,23 +23,23 @@ public extension PeerConnectionManagerDelegate where Self : ActivityLogger {
         addLogItem("This device disconnected")
     }
     
-    func didIssueInvitationToJoinClass(inviteeName: String) {
+    func didIssueInvitationToJoinClass(_ inviteeName: String) {
         addLogItem("Invitation issued to new class member \(inviteeName)")
     }
     
-    func studentDidStartConnecting(name: String) {
+    func studentDidStartConnecting(_ name: String) {
         addLogItem("\(name) started connecting to the class")
     }
     
-    func studentDidConnect(name: String) {
+    func studentDidConnect(_ name: String) {
         addLogItem("Class member \(name) connected to the class")
     }
     
-    func studentDidDisconnect(name: String) {
+    func studentDidDisconnect(_ name: String) {
         addLogItem("Class member \(name) disconnected from the class")
     }
     
-    func didReceiveDictionaryFromPeerWithName(name: String, dictionary: Dictionary<String, AnyObject>) {
+    func didReceiveDictionaryFromPeerWithName(_ name: String, dictionary: Dictionary<String, AnyObject>) {
         addLogItem("Received  from class member \(name) data: \(dictionary) ")
     }
 

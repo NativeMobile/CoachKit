@@ -34,9 +34,9 @@ class PeerConnectionListener: SessionDelegateDefault, MCNearbyServiceAdvertiserD
     
     }
     
-    private func startAdvertisingForPeers() {
+    fileprivate func startAdvertisingForPeers() {
         if !isAdvertising {
-            if UIApplication.sharedApplication().applicationState == .Active {
+            if UIApplication.shared.applicationState == .active {
                 advertiser!.startAdvertisingPeer()
                 isAdvertising = true
                 NSLog("Started advertising")
@@ -51,7 +51,7 @@ class PeerConnectionListener: SessionDelegateDefault, MCNearbyServiceAdvertiserD
         }
     }
     
-    private func stopAdvertisingForPeers() {
+    fileprivate func stopAdvertisingForPeers() {
         if isAdvertising {
             advertiser!.stopAdvertisingPeer()
             isAdvertising = false
@@ -70,12 +70,12 @@ class PeerConnectionListener: SessionDelegateDefault, MCNearbyServiceAdvertiserD
         super.disconnect()
     }
     
-    func sendMessageToCoach(dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (error: String)-> ()) {
+    func sendMessageToCoach(_ dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (_ error: String)-> ()) {
         let peers = [coachPeer!]
         sendMessageToPeersWithDictionary(dictionary, peers: peers, success: success, failure: failure)
     }
     
-    override func didBecomeActive(notification: NSNotification) {
+    override func didBecomeActive(_ notification: Notification) {
         super.didBecomeActive(notification)
         if session != nil {
             NSLog("setting session delegate")
@@ -87,7 +87,7 @@ class PeerConnectionListener: SessionDelegateDefault, MCNearbyServiceAdvertiserD
     // MARK: MCNearbyServiceAdvertiserDelegate
     
     // Incoming invitation request.  Call the invitationHandler block with YES and a valid session to connect the inviting peer to the session.
-    func advertiser(advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: NSData?, invitationHandler: (Bool, MCSession?) -> Void) {
+    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
         NSLog("Incoming invitation from peer %@", peerID.displayName);
         // Accept the invitation
         coachPeer = peerID;
@@ -98,27 +98,27 @@ class PeerConnectionListener: SessionDelegateDefault, MCNearbyServiceAdvertiserD
     }
     
     // Advertising did not start due to an error
-    func advertiser(advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: NSError) {
-        NSLog("Advertising did not start due to an error %@", error);
+    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Error) {
+        NSLog("Advertising did not start due to an error \(error)")
     }
 
     // MARK: - MCSessionDelegate
     
     // Remote peer changed state
-    override func session(session: MCSession, peer peerID: MCPeerID, didChangeState state: MCSessionState) {
+    override func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
         NSLog("Peer %@ changed state to %@", peerID, stateDescription(state))
         if peerID.isEqual(coachPeer) {
             switch state {
-            case .Connecting:
+            case .connecting:
                 stopAdvertisingForPeers()
                 callDelegate({ () -> Void in
                     self.delegate?.didStartConnectingToCoachingSession()
                 })
-            case .Connected:
+            case .connected:
                 callDelegate({ () -> Void in
                     self.delegate?.didConnectToCoachingSession()
                 })
-            case .NotConnected:
+            case .notConnected:
                 NSLog("Coach disconnected for coaching session");
                 callDelegate({ () -> Void in
                     self.delegate?.didDisconnectFromCoachingSession()
@@ -135,8 +135,8 @@ class PeerConnectionListener: SessionDelegateDefault, MCNearbyServiceAdvertiserD
     }
     
     // Received data from remote peer
-    override func session(session: MCSession, didReceiveData data: NSData, fromPeer peerID: MCPeerID) {
-        let dictionary = NSKeyedUnarchiver.unarchiveObjectWithData(data) as! Dictionary<String, AnyObject>
+    override func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
+        let dictionary = NSKeyedUnarchiver.unarchiveObject(with: data) as! Dictionary<String, AnyObject>
         NSLog("Peer %@ has sent message %@", peerID, dictionary)
         callDelegate({ () -> Void in
             self.delegate?.didReceiveDictionary(dictionary)

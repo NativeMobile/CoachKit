@@ -8,19 +8,19 @@
 
 import Foundation
 
-public class CoachConnectionManager {
+open class CoachConnectionManager {
     
-    private let listener: PeerConnectionListener
+    fileprivate let listener: PeerConnectionListener
     
     public init(serviceName: String, peerConnectionListenerDelegate: PeerConnectionListenerDelegate) {
         listener = PeerConnectionListener(serviceName: serviceName, peerConnectionListenerDelegate: peerConnectionListenerDelegate)
     }
     
-    public func connectToCoach() {
+    open func connectToCoach() {
         listener.startAdvertisingWillingnessToJoinTeachingSession()
     }
     
-    public func sendMessageToCoach(dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (error: String)-> ()) {
+    open func sendMessageToCoach(_ dictionary: Dictionary<String, AnyObject>, success: ()->(), failure: (_ error: String)-> ()) {
         listener.sendMessageToCoach(dictionary, success: success, failure: failure)
     }
 }
